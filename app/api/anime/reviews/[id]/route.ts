@@ -1,12 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '../../../../../lib/mongodb';
 
+type Props = {
+  params: {
+    id: string
+  }
+}
+
 export async function GET(
-  request: NextRequest,
-  context: { params: { id: string } }
+  req: NextRequest,
+  { params }: Props
 ) {
   try {
-    const { id } = context.params;
+    const { id } = params;
     const numericId = Number(id);
 
     if (isNaN(numericId)) {
