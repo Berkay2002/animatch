@@ -1,12 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '../../../../../lib/mongodb';
 
+type RouteParams = {
+  params: {
+    id: string
+  }
+}
+
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: RouteParams
 ) {
   try {
-    // Destructure id from params
     const { id } = params;
     const numericId = Number(id);
 
@@ -29,7 +34,7 @@ export async function GET(
         projection: {
           anime_id: 1,
           title: 1,
-          reviews: 1, // Just fetch reviews as strings
+          reviews: 1,
         },
       }
     );
@@ -45,8 +50,7 @@ export async function GET(
     return NextResponse.json(review);
   } catch (error) {
     console.error('Failed to fetch reviews for anime_id:', error);
-    const errorMessage =
-      error instanceof Error ? error.message : 'Unknown error';
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json(
       { message: 'Failed to fetch reviews', error: errorMessage },
       { status: 500 }
