@@ -1,29 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '../../../../../lib/mongodb';
 
-type Props = {
-  params: {
-    id: string
-  }
-}
-
 export async function GET(
   req: NextRequest,
-  { params }: Props
+  { params }: { params: { id: string } }
 ) {
   try {
     const { id } = params;
     const numericId = Number(id);
 
     if (isNaN(numericId)) {
-      console.error('Invalid anime ID format:', id);
       return NextResponse.json(
         { message: 'Invalid anime ID format' },
         { status: 400 }
       );
     }
-
-    console.log('Fetching reviews for anime_id:', numericId);
 
     const client = await clientPromise;
     const db = client.db('animeDB');
@@ -40,7 +31,6 @@ export async function GET(
     );
 
     if (!review) {
-      console.error('No reviews found for anime_id:', numericId);
       return NextResponse.json(
         { message: `Reviews not found for anime_id: ${numericId}` },
         { status: 404 }
@@ -49,7 +39,6 @@ export async function GET(
 
     return NextResponse.json(review);
   } catch (error) {
-    console.error('Failed to fetch reviews for anime_id:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json(
       { message: 'Failed to fetch reviews', error: errorMessage },
