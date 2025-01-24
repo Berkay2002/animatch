@@ -1,28 +1,29 @@
+import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '../../../../../lib/mongodb';
-import { NextResponse } from 'next/server';
 
 export async function GET(
-  request: Request,
-  context: { params: { id: string } }
-): Promise<NextResponse> {
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
-    const { id } = await context.params;
+    // Destructure id from params
+    const { id } = params;
     const numericId = Number(id);
 
     if (isNaN(numericId)) {
-      console.error("Invalid anime ID format:", id);
+      console.error('Invalid anime ID format:', id);
       return NextResponse.json(
-        { message: "Invalid anime ID format" },
+        { message: 'Invalid anime ID format' },
         { status: 400 }
       );
     }
 
-    console.log("Fetching reviews for anime_id:", numericId);
+    console.log('Fetching reviews for anime_id:', numericId);
 
     const client = await clientPromise;
-    const db = client.db("animeDB");
+    const db = client.db('animeDB');
 
-    const review = await db.collection("anime_reviews").findOne(
+    const review = await db.collection('anime_reviews').findOne(
       { anime_id: numericId },
       {
         projection: {
@@ -34,7 +35,7 @@ export async function GET(
     );
 
     if (!review) {
-      console.error("No reviews found for anime_id:", numericId);
+      console.error('No reviews found for anime_id:', numericId);
       return NextResponse.json(
         { message: `Reviews not found for anime_id: ${numericId}` },
         { status: 404 }
@@ -43,9 +44,11 @@ export async function GET(
 
     return NextResponse.json(review);
   } catch (error) {
-    console.error("Failed to fetch reviews for anime_id:", error);
+    console.error('Failed to fetch reviews for anime_id:', error);
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json(
-      { message: "Failed to fetch reviews", error: error.message },
+      { message: 'Failed to fetch reviews', error: errorMessage },
       { status: 500 }
     );
   }

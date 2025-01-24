@@ -52,7 +52,16 @@ export async function GET(request: NextRequest) {
 
     // 4) Merge results
     const merged = features.map((feat) => {
-      const embed = embeddingDocs.find((e) => e.anime_id === feat.anime_id) || {};
+      const embed = embeddingDocs.find((e) => e.anime_id === feat.anime_id) as {
+        Japanese?: string;
+        English?: string;
+        Synonyms?: string;
+        bert_description?: number[];
+        bert_genres?: number[];
+        bert_demographic?: number[];
+        bert_rating?: number[];
+        bert_themes?: number[];
+      } || {};
 
       // Destructure top-level bert fields
       const {

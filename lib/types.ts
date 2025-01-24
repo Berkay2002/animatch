@@ -6,8 +6,13 @@ export interface Anime {
     image_url?: string;
     title?: string;
     Description?: string;
+    Demographic?: string[];
+    Themes?: string[];
     Genres?: string[];
-    rating?: number;
+    Rating?: string;
+    Studios?: string[];
+    Synonyms?: string;
+    Score?: number;
     Popularity?: number;
     Rank?: number;
     bert_description?: number[];

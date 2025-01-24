@@ -13,7 +13,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const regexPattern = new RegExp(query, 'i');
 
     // Search in English, Synonyms, Japanese, and title fields
-    const animeList: Anime[] = await db
+    const animeList = await db
       .collection('sorted_anime')
       .find({
         $or: [
@@ -31,12 +31,12 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         title: 1,
         image_url: 1,
       })
-      .toArray();
+      .toArray() as Anime[];
 
     // Map the results to include a 'title' field
     const results = animeList.map((anime) => ({
       ...anime,
-      title: anime.English || anime.Synonyms || anime.Japanese || 'Unknown Title',
+      title: anime.English || anime.Japanese || 'Unknown Title',
     }));
 
     return NextResponse.json(results);
