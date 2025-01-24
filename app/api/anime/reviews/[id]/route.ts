@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '../../../../../lib/mongodb';
 
-// The second argument is inline-typed:
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  const { id } = params;
+export async function GET(request: NextRequest) {
+  // The URL might be something like ".../api/anime/reviews/123"
+  const url = new URL(request.url);
+  // Get segments from the path
+  // e.g. /api/anime/reviews/123 -> ["", "api", "anime", "reviews", "123"]
+  const segments = url.pathname.split('/').filter(Boolean);
+
+  // The last segment should be your ID, or you can find it by index
+  const id = segments[segments.length - 1];
   const numericId = Number(id);
 
   if (isNaN(numericId)) {
@@ -22,13 +25,7 @@ export async function GET(
 
     const review = await db.collection('anime_reviews').findOne(
       { anime_id: numericId },
-      {
-        projection: {
-          anime_id: 1,
-          title: 1,
-          reviews: 1,
-        },
-      }
+      { projection: { anime_id: 1, title: 1, reviews: 1 } }
     );
 
     if (!review) {
